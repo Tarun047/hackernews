@@ -19,6 +19,11 @@ objectID: 1,
 },
 ];
 
+//Styling area
+const largeColumn = {width:'40%',};
+const midColumn = {width:'30%',};
+const smallColumn = {width:'10%'};
+
 function isSearched(searchTerm)
 {
   return (item)=>item.title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -50,13 +55,15 @@ class App extends Component
   render(){
     const { searchTerm, list } = this.state;
     return(
-      <div className="App">
+      <div className="page">
+      <div className="interactions">
       <Search
       value={searchTerm}
       onChange={this.onSearchChange}
       >
         Search &nbsp;
       </Search>
+      </div>
       <Table
         list={list}
         pattern={searchTerm}
@@ -68,17 +75,17 @@ class App extends Component
 }
 
 const Table = ({list,pattern,onDismiss})=>
-      <div>
+      <div className="table">
         {list.filter(isSearched(pattern)).map(item=>
-        <div key={item.objectID}>
-          <span>
+        <div key={item.objectID} className="table-row">
+          <span style={largeColumn}>
               <a href={item.url}>{item.title}</a>
           </span><br/>
-          <span>{item.author}</span><br/>
-          <span>{item.num_comments}</span><br/>
-          <span>{item.points}</span><br/>
+          <span style={midColumn}>{item.author}</span><br/>
+          <span style={smallColumn}>{item.num_comments}</span><br/>
+          <span style={smallColumn}>{item.points}</span><br/>
           <span>
-          <Button onClick={()=>onDismiss(item.objectID)}>
+          <Button className="button-inline" onClick={()=>onDismiss(item.objectID)}>
                 Dismiss
           </Button>
           </span>
