@@ -14,11 +14,6 @@ const largeColumn = {width:'40%',};
 const midColumn = {width:'30%',};
 const smallColumn = {width:'10%'};
 
-function isSearched(searchTerm)
-{
-  return (item)=>item.title.toLowerCase().includes(searchTerm.toLowerCase());
-}
-
 class App extends Component
 {
   constructor(props)
@@ -32,6 +27,7 @@ class App extends Component
     this.onDismiss = this.onDismiss.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
     this.fetchSearchTopStories = this.fetchSearchTopStories.bind(this);
+    this.onSearchSubmit = this.onSearchSubmit.bind(this);
   }
   fetchSearchTopStories(searchTerm,page=0) {
       fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}`)
@@ -62,11 +58,16 @@ class App extends Component
     });
   }
 
+  onSearchSubmit(event)
+  {
+    const { searchTerm } = this.state;
+    this.fetchSearchTopStories(searchTerm);
+    event.preventDefault()
+  }
+
   onSearchChange(event)
   {
     this.setState({ searchTerm: event.target.value });
-    this.fetchSearchTopStories(this.state.searchTerm)
-    event.preventDefault();
   }
   render(){
     const { searchTerm, result } = this.state;
@@ -79,15 +80,16 @@ class App extends Component
           <Search
             value={searchTerm}
             onChange={this.onSearchChange}
+            onSubmit={this.onSearchSubmit}
             >
             Search
           </Search>
         </div>
-        { result?<Table
+        { result&&<Table
             list={result.hits}
             pattern={searchTerm}
             onDismiss={this.onDismiss}
-          />: null
+          />
         }
         <div className="interactions">
           <Button onClick={() => this.fetchSearchTopStories(searchTerm, page + 1)}>
@@ -118,14 +120,16 @@ const Table = ({list,pattern,onDismiss})=>
         )}
       </div>
 
-const Search = ({ value, onChange, children })=>
-      <form>
-        {children}
+const Search = ({ value, onChange, onSubmit, children })=>
+      <form onSubmit = {onSubmit} >
         <input
           type="text"
           value={value}
           onChange={onChange}
         />
+        <button type="submit">
+          {children}
+        </button>
       </form>
 
 const Button = ({onClick,className="",children})=>
